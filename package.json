@@ -1,6 +1,6 @@
 {
     "name": "fecs-git-hooks",
-    "version": "0.1-beta",
+    "version": "0.0.1",
     "description": "Fecs git pre-commit hook",
     "repository": {
         "type": "git",
@@ -18,6 +18,6 @@
         "url": "https://github.com/cxtom/fecs-git-hooks/issues"
     },
     "dependencies": {
-        "fecs": "^0.3.7-beta.1"
+        "fecs": "0.3.7-beta.1"
     }
 }
