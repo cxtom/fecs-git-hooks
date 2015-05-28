@@ -7,15 +7,35 @@
 
 var path        = require('path');
 var fs          = require('vinyl-fs');
-
-var ignored     = require('fecs/lib/ignored');
-var jschecker   = require('fecs/lib/js/checker');
-var csschecker  = require('fecs/lib/css/checker');
-var lesschecker = require('fecs/lib/less/checker');
-var htmlchecker = require('fecs/lib/html/checker');
 var exec        = require('child_process').exec;
 
+var ignored;
+var jschecker;
+var csschecker;
+var lesschecker;
+var htmlchecker;
 
+exec('npm root -g', function (error, result, stderr) {
+    if (error !== null) {
+        console.log('exec error: ' + error);
+        process.exit(1);
+    }
+
+    var npmRoot = result.trim();
+    try {
+        require(npmRoot.'/fecs')
+    }
+    catch (e) {
+        console.log('还没有安装fecs，请先运行\'npm install fecs -g\'~~');
+        process.exit(1);
+    }
+
+    ignored     = require('fecs/lib/ignored');
+    jschecker   = require('fecs/lib/js/checker');
+    csschecker  = require('fecs/lib/css/checker');
+    lesschecker = require('fecs/lib/less/checker');
+    htmlchecker = require('fecs/lib/html/checker');
+});
 
 exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
     if (error !== null) {
