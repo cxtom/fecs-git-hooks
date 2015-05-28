@@ -71,8 +71,6 @@ exec('npm root -g', function (error, result, stderr) {
             console.log(result);
         }
 
-        console.log(result);
-
         stagedFiles = stagedFiles || result.trim().split('\n');
 
         if (!stagedFiles || !stagedFiles.length) {
