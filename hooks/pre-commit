@@ -1,16 +1,78 @@
 #! /usr/bin/env node
+
 /**
  * @file git pre-commit hook git代码提交之前对文件进行检查
  * @author chenxiao07@baidu.com
  */
 
-var path = require('path');
-var check = require('/usr/local/lib/node_modules/fecs/cli/check');
+var path        = require('path');
+var fs          = require('vinyl-fs');
+
+var ignored     = require('fecs/lib/ignored');
+var jschecker   = require('fecs/lib/js/checker');
+var csschecker  = require('fecs/lib/css/checker');
+var lesschecker = require('fecs/lib/less/checker');
+var htmlchecker = require('fecs/lib/html/checker');
+var exec        = require('child_process').exec;
 
 
-var options = {
-    color: '#fff'
-}
-check.run(options, function (success, json) {
-    console.timeEnd();
+
+exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
+    if (error !== null) {
+        console.log('exec error: ' + error);
+        process.exit(1);
+    }
+    // 还有文件未添加
+    if (result.indexOf('Changes not staged for commit:') >= 0) {
+        console.log(result);
+        process.exit(1);
+    }
+
+    var stagedFiles = result.trim().split('\n');
+
+    if (!stagedFiles || !stagedFiles.length) {
+        process.exit(0);
+        return;
+    }
+
+    fecsCheck(stagedFiles);
 });
+
+/**
+ * 执行对文件内容的检查
+ *
+ */
+function filesCheck (files, options) {
+    var specials = files;
+    return fs.src(files, {cwdbase: true})
+        .pipe(ignored(options, specials))
+        .pipe(jschecker.exec(options))
+        .pipe(csschecker.exec(options))
+        .pipe(lesschecker.exec(options));
+}
+
+function fecsCheck(files) {
+
+    var name = 'fecs-git-precommit-check';
+
+    console.time(name);
+
+    var options= {
+        color: '#FF0000'
+    }
+
+    var log = require('fecs/lib/log')(options.color);
+    var reporter = require('fecs/lib/reporter').get(log, options);
+
+    done = function (success, json) {
+        console.timeEnd(name);
+        if(!success) {
+            console.log('请修改以后再提交吧！');
+        }
+        process.exit(success ? 0 : 1);
+    };
+
+    return filesCheck(files, options)
+        .pipe(reporter)
+        .once('end', done);
+}

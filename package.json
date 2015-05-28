@@ -18,6 +18,7 @@
         "url": "https://github.com/cxtom/fecs-git-hooks/issues"
     },
     "dependencies": {
-        "fecs": "0.3.7-beta.1"
+        "fecs": "0.3.7-beta.1",
+        "vinyl-fs": "^1.0.0"
     }
 }
