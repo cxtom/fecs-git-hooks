@@ -24,6 +24,6 @@
         "fecs-hook": "./bin/fecs-hook"
     },
     "dependencies": {
-
+        "minimist": "^1.1.0"
     }
 }
