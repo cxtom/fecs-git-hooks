@@ -15,51 +15,76 @@ var csschecker;
 var lesschecker;
 var htmlchecker;
 
+
+console.log('要提交代码先要通过fecs审查哦！\n');
+console.log('检查是否已经安装fecs');
+
 exec('npm root -g', function (error, result, stderr) {
+
     if (error !== null) {
         console.log('exec error: ' + error);
         process.exit(1);
     }
 
-    var npmRoot = result.trim();
+    var fecsRoot = result.trim() + '/fecs';
     try {
-        require(npmRoot.'/fecs')
+        require(fecsRoot);
     }
     catch (e) {
         console.log('还没有安装fecs，请先运行\'npm install fecs -g\'~~');
         process.exit(1);
     }
 
-    ignored     = require('fecs/lib/ignored');
-    jschecker   = require('fecs/lib/js/checker');
-    csschecker  = require('fecs/lib/css/checker');
-    lesschecker = require('fecs/lib/less/checker');
-    htmlchecker = require('fecs/lib/html/checker');
-});
+    ignored     = require(fecsRoot + '/lib/ignored');
+    jschecker   = require(fecsRoot + '/lib/js/checker');
+    csschecker  = require(fecsRoot + '/lib/css/checker');
+    lesschecker = require(fecsRoot + '/lib/less/checker');
+    htmlchecker = require(fecsRoot + '/lib/html/checker');
 
-exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
-    if (error !== null) {
-        console.log('exec error: ' + error);
-        process.exit(1);
-    }
-    // 还有文件未添加
-    if (result.indexOf('Changes not staged for commit:') >= 0) {
+    console.log('开始检查...');
+
+    var stagedFiles;
+
+    exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
+        if (error !== null) {
+            console.log('' + error);
+
+            if (('' + error).indexOf('unknown revision') > 0) {
+                console.log('仓库还没有提交记录，默认对所有文件进行检查');
+                stagedFiles = ['./**/*.{js,css,less,html}']
+            }
+            else {
+                process.exit(1);
+            }
+        }
+        // 还有文件未添加
+        if (result.indexOf('Changes not staged for commit:') >= 0) {
+            console.log(result);
+            process.exit(1);
+        }
+
+        console.log('提交的文件列表：');
+        if (!!stagedFiles) {
+            console.log('./**/*.{js,css,less,html}');
+        }
+        else {
+            console.log(result);
+        }
+
         console.log(result);
-        process.exit(1);
-    }
 
-    console.log('提交的文件列表：');
-    console.log(result);
+        stagedFiles = stagedFiles || result.trim().split('\n');
 
-    var stagedFiles = result.trim().split('\n');
+        if (!stagedFiles || !stagedFiles.length) {
+            process.exit(0);
+            return;
+        }
 
-    if (!stagedFiles || !stagedFiles.length) {
-        process.exit(0);
-        return;
-    }
-
-    fecsCheck(stagedFiles);
+        fecsCheck(stagedFiles);
+    });
 });
+
+
 
 /**
  * 执行对文件内容的检查
@@ -71,7 +96,8 @@ function filesCheck (files, options) {
         .pipe(ignored(options, specials))
         .pipe(jschecker.exec(options))
         .pipe(csschecker.exec(options))
-        .pipe(lesschecker.exec(options));
+        .pipe(lesschecker.exec(options))
+        .pipe(htmlchecker.exec(options));
 }
 
 function fecsCheck(files) {
@@ -81,8 +107,7 @@ function fecsCheck(files) {
     console.time(name);
 
     var options= {
-        color: true,
-        debug: true
+        color: true
     }
 
     var log = require('fecs/lib/log')(options.color);
@@ -91,7 +116,7 @@ function fecsCheck(files) {
     done = function (success, json) {
         console.timeEnd(name);
         if(!success) {
-            console.log('请修改以后再提交吧！');
+            console.log('看来规范还有问题，请修改以后再提交吧！');
         }
         process.exit(success ? 0 : 1);
     };
