@@ -6,15 +6,14 @@
  */
 
 var path        = require('path');
-var fs          = require('vinyl-fs');
 var exec        = require('child_process').exec;
 
+var fs;
 var ignored;
 var jschecker;
 var csschecker;
 var lesschecker;
 var htmlchecker;
-
 
 console.log('要提交代码先要通过fecs审查哦！\n');
 console.log('检查是否已经安装fecs');
@@ -35,6 +34,7 @@ exec('npm root -g', function (error, result, stderr) {
         process.exit(1);
     }
 
+    fs          = require(fecsRoot + '/node_modules/vinyl-fs');
     ignored     = require(fecsRoot + '/lib/ignored');
     jschecker   = require(fecsRoot + '/lib/js/checker');
     csschecker  = require(fecsRoot + '/lib/css/checker');
