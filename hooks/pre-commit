@@ -128,7 +128,6 @@ function fecsCheck(files) {
 
     var options= {
         color: true,
-        debug: true,
         _: files
     }
 
