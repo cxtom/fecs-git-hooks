@@ -18,7 +18,7 @@ var htmlchecker;
 var fecsRoot;
 
 console.log('要提交代码先要通过fecs审查哦！\n');
-console.log('检查是否已经安装fecs');
+// console.log('检查是否已经安装fecs\n');
 
 exec('npm root -g', function (error, result, stderr) {
 
@@ -43,7 +43,7 @@ exec('npm root -g', function (error, result, stderr) {
     lesschecker = require(fecsRoot + '/lib/less/checker');
     htmlchecker = require(fecsRoot + '/lib/html/checker');
 
-    console.log('开始检查...');
+    // console.log('开始检查...');
 
     var stagedFiles;
 
