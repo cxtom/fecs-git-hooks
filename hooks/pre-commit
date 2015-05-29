@@ -15,6 +15,8 @@ var csschecker;
 var lesschecker;
 var htmlchecker;
 
+var fecsRoot;
+
 console.log('要提交代码先要通过fecs审查哦！\n');
 console.log('检查是否已经安装fecs');
 
@@ -25,7 +27,7 @@ exec('npm root -g', function (error, result, stderr) {
         process.exit(1);
     }
 
-    var fecsRoot = result.trim() + '/fecs';
+    fecsRoot = result.trim() + '/fecs';
     try {
         require(fecsRoot);
     }
@@ -108,8 +110,8 @@ function fecsCheck(files) {
         color: true
     }
 
-    var log = require('fecs/lib/log')(options.color);
-    var reporter = require('fecs/lib/reporter').get(log, options);
+    var log = require(fecsRoot + '/lib/log')(options.color);
+    var reporter = require(fecsRoot + '/lib/reporter').get(log, options);
 
     done = function (success, json) {
         console.timeEnd(name);
