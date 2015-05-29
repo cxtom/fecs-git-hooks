@@ -5,10 +5,14 @@
  * @author chenxiao <chxtom2015@163.com>
  */
 
-var exec        = require('child_process').exec;
+var exec = require('child_process').exec;
+var fs   = require('fs');
+var path = require('path');
 
-var fs;
+var IGNORE_FILENAME = '.fecsignore';
+
 var fecs;
+var minimatch;
 
 console.log('要提交代码先要通过fecs审查哦！\n');
 // console.log('检查是否已经安装fecs');
@@ -29,7 +33,8 @@ exec('npm root -g', function (error, result, stderr) {
         process.exit(1);
     }
 
-    fecs        = require(fecsRoot);
+    fecs = require(fecsRoot);
+    minimatch = require(fecsRoot + '/node_modules/minimatch');
 
     // console.log('开始检查...');
 
@@ -70,9 +75,46 @@ exec('npm root -g', function (error, result, stderr) {
             return;
         }
 
+        stagedFiles = ignore(stagedFiles);
         fecsCheck(stagedFiles);
     });
 });
+
+
+/**
+ * 删除fecs中忽略的文件
+ * @param  {Array} files 文件列表
+ * @return {Array}       修改后的文件列表
+ */
+function ignore(files) {
+    var patterns = [];
+    function valid(line) {
+        line = line.trim();
+        return line !== '' && line[0] !== '#';
+    }
+    var ignoreFilePath = path.resolve(__dirname, '../../' + IGNORE_FILENAME);
+
+    try {
+        patterns = fs.readFileSync(ignoreFilePath, 'utf8').split(/\r?\n/).filter(valid);
+        files = files.filter(function (filePath) {
+            var result = false;
+            patterns.forEach(function (pattern) {
+                var matches = minimatch(filePath, pattern) || minimatch(filePath, pattern + '/**');
+                if (matches) {
+                    result = true;
+                    console.log('%s is ignored by %s.', filePath, pattern);
+                    return false;
+                }
+            });
+            return !result;
+        });
+    }
+    catch (e) {
+        // 没有.fecsignore
+    }
+    console.log('');
+    return files;
+}
 
 /**
  * 运行代码检查
@@ -86,6 +128,7 @@ function fecsCheck(files) {
 
     var options= {
         color: true,
+        debug: true,
         _: files
     }
 
@@ -94,6 +137,7 @@ function fecsCheck(files) {
         if(!success) {
             console.log('看来规范还有问题，请修改以后再提交吧！');
         }
+        console.log('');
         process.exit(success ? 0 : 1);
     };
 
