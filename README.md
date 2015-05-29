@@ -2,7 +2,7 @@
 
 安装：
 
-    $ npm install fecs-git-hooks
+    $ npm install fecs-git-hooks -g
 
 使用（在git根目录下）：
 
