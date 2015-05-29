@@ -6,5 +6,5 @@
 
 使用（在git根目录下）：
 
-    $ fecs init
-    $ fecs disable
+    $ fecs-hook init
+    $ fecs-hook disable
