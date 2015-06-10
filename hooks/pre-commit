@@ -10,6 +10,7 @@ var fs   = require('fs');
 var path = require('path');
 
 var IGNORE_FILENAME = '.fecsignore';
+var name = 'fecs-git-precommit-check';
 
 var fecs;
 var minimatch;
@@ -23,6 +24,8 @@ exec('npm root -g', function (error, result, stderr) {
         console.log('exec error: ' + error);
         process.exit(1);
     }
+
+    console.time(name);
 
     var fecsRoot = result.trim() + '/fecs';
     try {
@@ -76,7 +79,13 @@ exec('npm root -g', function (error, result, stderr) {
         }
 
         stagedFiles = ignore(stagedFiles);
-        fecsCheck(stagedFiles);
+
+        if (stagedFiles.length === 0) {
+            console.log('No file need to be checked~');
+        }
+        else {
+            fecsCheck(stagedFiles);
+        }
     });
 });
 
@@ -102,7 +111,7 @@ function ignore(files) {
                 var matches = minimatch(filePath, pattern) || minimatch(filePath, pattern + '/**');
                 if (matches) {
                     result = true;
-                    console.log('%s is ignored by %s.', filePath, pattern);
+                    console.log('%s is ignored by %s.', filePath, '.fecsignore');
                     return false;
                 }
             });
@@ -121,10 +130,6 @@ function ignore(files) {
  * @param  {Array} files 文件列表数组
  */
 function fecsCheck(files) {
-
-    var name = 'fecs-git-precommit-check';
-
-    console.time(name);
 
     var options= {
         color: true,
