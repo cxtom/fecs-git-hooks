@@ -133,6 +133,7 @@ function fecsCheck(files) {
 
     var options= {
         color: true,
+        rule: true,
         _: files
     }
 
