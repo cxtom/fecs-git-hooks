@@ -80,7 +80,11 @@ exec('npm root -g', function (error, result, stderr) {
 
         stagedFiles = ignore(stagedFiles);
 
-        if (stagedFiles.length === 0) {
+
+        var patterns = require(fecsRoot + '/lib/util').buildPattern(stagedFiles, 'js,css,less,html');
+        patterns.specials && delete patterns.specials;
+
+        if (patterns.length === 0) {
             console.log('No file need to be checked~');
         }
         else {
