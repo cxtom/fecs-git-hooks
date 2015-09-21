@@ -138,8 +138,9 @@ function fecsCheck(files) {
     var options= {
         color: true,
         rule: true,
+        stream: false,
         _: files
-    }
+    };
 
     var done = function (success, json) {
         console.timeEnd(name);
