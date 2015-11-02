@@ -66,11 +66,21 @@ exec('npm root -g', function (error, result, stderr) {
 
         stagedFiles = stagedFiles || result.trim().split('\n');
         exitWhenEmpty(stagedFiles);
+
+        // 去掉删除的（不存在）文件
+        stagedFiles = stagedFiles.filter(function (file) {
+            var filePath = path.resolve(__dirname, '../../', file);
+
+            return fs.existsSync(filePath);
+        });
+
         stagedFiles = ignore(stagedFiles);
         exitWhenEmpty(stagedFiles);
 
         var patterns = require(fecsRoot + '/lib/util').buildPattern(stagedFiles, 'js,css,less,html');
         patterns.specials && delete patterns.specials;
+
+        // console.log(patterns);
 
         exitWhenEmpty(patterns);
         fecsCheck(patterns);
@@ -83,7 +93,6 @@ function exitWhenEmpty(files) {
         process.exit(0);
     }
 }
-
 
 /**
  * 删除fecs中忽略的文件
