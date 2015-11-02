@@ -62,40 +62,27 @@ exec('npm root -g', function (error, result, stderr) {
         }
 
         console.log('提交的文件列表：');
-        // if (!!stagedFiles) {
-        //     console.log('./**/*.{js,css,less,html}');
-        // }
-        // else {
-        //     console.log(result);
-        // }
-
         console.log(result);
 
         stagedFiles = stagedFiles || result.trim().split('\n');
-
-        if (!stagedFiles || !stagedFiles.length) {
-            process.exit(0);
-            return;
-        }
-
+        exitWhenEmpty(stagedFiles);
         stagedFiles = ignore(stagedFiles);
-
-        if (stagedFiles.length === 0) {
-            process.exit(0);
-            return;
-        }
+        exitWhenEmpty(stagedFiles);
 
         var patterns = require(fecsRoot + '/lib/util').buildPattern(stagedFiles, 'js,css,less,html');
         patterns.specials && delete patterns.specials;
 
-        if (patterns.length === 0) {
-            console.log('No file need to be checked~');
-        }
-        else {
-            fecsCheck(stagedFiles);
-        }
+        exitWhenEmpty(patterns);
+        fecsCheck(patterns);
     });
 });
+
+function exitWhenEmpty(files) {
+    if (!files || files.length === 0) {
+        console.log('No file need to be checked~');
+        process.exit(0);
+    }
+}
 
 
 /**
