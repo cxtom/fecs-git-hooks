@@ -83,7 +83,7 @@ exec('npm root -g', function (error, result, stderr) {
         // console.log(patterns);
 
         exitWhenEmpty(patterns);
-        fecsCheck(patterns);
+        fecsCheck(stagedFiles);
     });
 });
 
