@@ -1,29 +1,30 @@
 {
-    "name": "fecs-git-hooks",
-    "version": "0.0.8",
-    "description": "Fecs git pre-commit hook",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cxtom/fecs-git-hooks"
-    },
-    "scripts": {
-        "install": "node ./lib/install.js"
-    },
-    "keywords": [
-        "fecs"
-    ],
-    "author": "cxtom <cxtom2010@gmail.com>",
-    "license": "MIT",
-    "engines": {
-        "node": ">=0.10"
-    },
-    "bugs": {
-        "url": "https://github.com/cxtom/fecs-git-hooks/issues"
-    },
-    "bin": {
-        "fecs-hook": "./bin/fecs-hook"
-    },
-    "dependencies": {
-        "minimist": "^1.1.0"
-    }
+  "name": "fecs-git-hooks",
+  "version": "0.0.8",
+  "description": "Fecs git pre-commit hook",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cxtom/fecs-git-hooks"
+  },
+  "scripts": {
+    "install": "node ./lib/install.js"
+  },
+  "keywords": [
+    "fecs"
+  ],
+  "author": "cxtom <cxtom2010@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10"
+  },
+  "bugs": {
+    "url": "https://github.com/cxtom/fecs-git-hooks/issues"
+  },
+  "bin": {
+    "fecs-hook": "./bin/fecs-hook"
+  },
+  "dependencies": {
+    "git-validate": "^2.1.4",
+    "minimist": "^1.1.0"
+  }
 }
