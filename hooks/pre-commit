@@ -16,7 +16,8 @@ var fecs;
 var minimatch;
 
 console.log('要提交代码先要通过fecs审查哦！\n');
-// console.log('检查是否已经安装fecs');
+
+exec('fecs -v');
 
 exec('npm root -g', function (error, result, stderr) {
 
@@ -144,11 +145,15 @@ function fecsCheck(files) {
 
     var done = function (success, json) {
         console.timeEnd(name);
+
+        console.log(json);
+
+        success = success && json.length === 0;
         if(!success) {
             console.log('看来规范还有问题，请修改以后再提交吧！');
         }
         console.log('');
-        process.exit(success ? 0 : 1);
+        process.exit(success  ? 0 : 1);
     };
 
     fecs.check(options, done);

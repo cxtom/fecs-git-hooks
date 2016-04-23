@@ -1,13 +1,13 @@
 {
     "name": "fecs-git-hooks",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Fecs git pre-commit hook",
     "repository": {
         "type": "git",
         "url": "https://github.com/cxtom/fecs-git-hooks"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "install": "node ./lib/install.js"
     },
     "keywords": [
         "fecs"
