@@ -1,4 +1,4 @@
-# fecs-git-hooks
+# fecs-git-hooks [![Version](https://badge.fury.io/js/fecs-git-hooks.svg)](https://www.npmjs.com/package/fecs-git-hooks)
 
 ## 自动方式（推荐）
 
