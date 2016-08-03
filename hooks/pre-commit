@@ -138,6 +138,7 @@ function fecsCheck(files) {
         color: true,
         rule: true,
         stream: false,
+        lookup: true,
         _: files
     };
 

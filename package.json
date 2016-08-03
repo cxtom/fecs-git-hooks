@@ -1,6 +1,6 @@
 {
   "name": "fecs-git-hooks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fecs git pre-commit hook",
   "repository": {
     "type": "git",
