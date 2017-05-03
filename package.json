@@ -1,13 +1,14 @@
 {
   "name": "fecs-git-hooks",
-  "version": "0.1.1",
-  "description": "Fecs git pre-commit hook",
+  "version": "1.0.0-beta.1",
+  "description": "fecs git pre-commit hook",
   "repository": {
     "type": "git",
     "url": "https://github.com/cxtom/fecs-git-hooks"
   },
   "scripts": {
-    "install": "fecs -v && node ./lib/install.js"
+    "install": "fecs -v && node ./lib/install.js",
+    "uninstall": "node ./lib/uninstall.js"
   },
   "keywords": [
     "fecs"
@@ -20,10 +21,8 @@
   "bugs": {
     "url": "https://github.com/cxtom/fecs-git-hooks/issues"
   },
-  "bin": {
-    "fecs-hook": "./bin/fecs-hook"
-  },
-  "dependencies": {
-    "minimist": "^1.1.0"
+  "peerDependencies": {
+    "fecs": "^1.2.0",
+    "minimatch": "^3.0.2"
   }
 }

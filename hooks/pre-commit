@@ -10,80 +10,69 @@ var fs   = require('fs');
 var path = require('path');
 
 var IGNORE_FILENAME = '.fecsignore';
-var name = 'fecs-git-precommit-check';
+
+var ROOT = path.resolve(__dirname, '../..');
 
 var fecs;
 var minimatch;
 
 console.log('要提交代码先要通过fecs审查哦！\n');
 
-exec('npm root -g', function (error, result, stderr) {
+var fecsRoot = path.resolve(ROOT, 'node_modules/fecs');
+try {
+    require(fecsRoot);
+}
+catch (e) {
+    console.log('还没有安装fecs，请先运行\'npm install fecs\'~~');
+    process.exit(1);
+}
 
+fecs = require(fecsRoot);
+minimatch = require(path.resolve(ROOT, 'node_modules/minimatch'));
+
+var stagedFiles;
+
+exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
     if (error !== null) {
-        console.log('exec error: ' + error);
-        process.exit(1);
-    }
+        console.log('' + error);
 
-    console.time(name);
-
-    var fecsRoot = result.trim() + '/fecs';
-    try {
-        require(fecsRoot);
-    }
-    catch (e) {
-        console.log('还没有安装fecs，请先运行\'npm install fecs -g\'~~');
-        process.exit(1);
-    }
-
-    fecs = require(fecsRoot);
-    minimatch = require(fecsRoot + '/node_modules/minimatch');
-
-    // console.log('开始检查...');
-
-    var stagedFiles;
-
-    exec('git diff-index --cached --name-only HEAD', function (error, result, stderr) {
-        if (error !== null) {
-            console.log('' + error);
-
-            if (('' + error).indexOf('unknown revision') > 0) {
-                console.log('仓库还没有提交记录，默认对所有文件进行检查');
-                stagedFiles = ['./**/*.{js,css,less,html}']
-            }
-            else {
-                process.exit(1);
-            }
+        if (('' + error).indexOf('unknown revision') > 0) {
+            console.log('仓库还没有提交记录，默认对所有文件进行检查');
+            stagedFiles = ['./**/*.{js,css,less,html,vue,styl}']
         }
-        // 还有文件未添加
-        if (result.indexOf('Changes not staged for commit:') >= 0) {
-            console.log(result);
+        else {
             process.exit(1);
         }
-
-        console.log('提交的文件列表：');
+    }
+    // 还有文件未添加
+    if (result.indexOf('Changes not staged for commit:') >= 0) {
         console.log(result);
+        process.exit(1);
+    }
 
-        stagedFiles = stagedFiles || result.trim().split('\n');
-        exitWhenEmpty(stagedFiles);
+    console.log('提交的文件列表：');
+    console.log(result);
 
-        // 去掉删除的（不存在）文件
-        stagedFiles = stagedFiles.filter(function (file) {
-            var filePath = path.resolve(__dirname, '../../', file);
+    stagedFiles = stagedFiles || result.trim().split('\n');
+    exitWhenEmpty(stagedFiles);
 
-            return fs.existsSync(filePath);
-        });
+    // 去掉删除的（不存在）文件
+    stagedFiles = stagedFiles.filter(function (file) {
+        var filePath = path.resolve(__dirname, '../../', file);
 
-        stagedFiles = ignore(stagedFiles);
-        exitWhenEmpty(stagedFiles);
-
-        var patterns = require(fecsRoot + '/lib/util').buildPattern(stagedFiles, 'js,css,less,html');
-        patterns.specials && delete patterns.specials;
-
-        // console.log(patterns);
-
-        exitWhenEmpty(patterns);
-        fecsCheck(stagedFiles);
+        return fs.existsSync(filePath);
     });
+
+    stagedFiles = ignore(stagedFiles);
+    exitWhenEmpty(stagedFiles);
+
+    var patterns = require(fecsRoot + '/lib/util').buildPattern(stagedFiles, 'js,css,less,html');
+    patterns.specials && delete patterns.specials;
+
+    // console.log(patterns);
+
+    exitWhenEmpty(patterns);
+    fecsCheck(stagedFiles);
 });
 
 function exitWhenEmpty(files) {
@@ -143,14 +132,12 @@ function fecsCheck(files) {
     };
 
     var done = function (success, json) {
-        console.timeEnd(name);
-
         success = success && json.length === 0;
-        if(!success) {
+        if (!success) {
             console.log('看来规范还有问题，请修改以后再提交吧！');
         }
         console.log('');
-        process.exit(success  ? 0 : 1);
+        process.exit(success ? 0 : 1);
     };
 
     fecs.check(options, done);
